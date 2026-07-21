@@ -1,4 +1,4 @@
-module wr-cli
+module fk-report
 
 go 1.25
 

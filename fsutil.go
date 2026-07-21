@@ -7,12 +7,20 @@ import (
 	"time"
 )
 
-func dailyDir() string {
+func weeklyReportsRoot() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Join(home, "Desktop", "weekly_reports", "daily")
+	return filepath.Join(home, "Desktop", "weekly_reports")
+}
+
+func dailyDir() string {
+	return filepath.Join(weeklyReportsRoot(), "daily")
+}
+
+func todoFile() string {
+	return filepath.Join(weeklyReportsRoot(), "todo.md")
 }
 
 func todayFile() string {
@@ -89,4 +97,50 @@ func fragmentLines(content string) []string {
 		}
 	}
 	return lines
+}
+
+type todoItem struct {
+	text string
+	done bool
+}
+
+// readTodos 读取 todo.md，格式为 "- [ ] 内容" / "- [x] 内容"。文件不存在时返回空列表。
+func readTodos() ([]todoItem, error) {
+	b, err := os.ReadFile(todoFile())
+	if os.IsNotExist(err) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	var items []todoItem
+	for _, l := range strings.Split(string(b), "\n") {
+		l = strings.TrimSpace(l)
+		switch {
+		case strings.HasPrefix(l, "- [x] "):
+			items = append(items, todoItem{text: strings.TrimPrefix(l, "- [x] "), done: true})
+		case strings.HasPrefix(l, "- [ ] "):
+			items = append(items, todoItem{text: strings.TrimPrefix(l, "- [ ] "), done: false})
+		}
+	}
+	return items, nil
+}
+
+// writeTodos 把整个待办列表覆盖写回 todo.md。
+func writeTodos(items []todoItem) error {
+	dir := weeklyReportsRoot()
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
+
+	var b strings.Builder
+	for _, it := range items {
+		mark := " "
+		if it.done {
+			mark = "x"
+		}
+		b.WriteString("- [" + mark + "] " + it.text + "\n")
+	}
+	return os.WriteFile(todoFile(), []byte(b.String()), 0644)
 }

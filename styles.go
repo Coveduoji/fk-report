@@ -3,13 +3,27 @@ package main
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	colorAccent = lipgloss.Color("#7D56F4")
+	colorAccent = lipgloss.Color("#E63946")
 	colorMuted  = lipgloss.Color("240")
 	colorText   = lipgloss.Color("252")
-	colorError  = lipgloss.Color("203")
+	colorError  = lipgloss.Color("208")
 	colorOk     = lipgloss.Color("78")
+	colorDone   = lipgloss.Color("240")
 
 	titleStyle = lipgloss.NewStyle().Bold(true).Foreground(colorAccent)
+
+	doneItemStyle = lipgloss.NewStyle().Foreground(colorDone).Strikethrough(true)
+	buttonStyle   = lipgloss.NewStyle().Padding(0, 3).Foreground(colorText)
+	buttonActiveStyle = lipgloss.NewStyle().Padding(0, 3).Bold(true).
+				Foreground(lipgloss.Color("230")).Background(colorAccent)
+	previewHeaderStyle = lipgloss.NewStyle().Foreground(colorMuted).Italic(true)
+
+	bannerStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(colorAccent).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(colorAccent).
+			Padding(1, 4)
 
 	sidebarStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).

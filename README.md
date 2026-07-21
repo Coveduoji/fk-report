@@ -1,4 +1,4 @@
-# fk-report
+# fuck-report
 
 一个安全运营周报 + 待办的终端 TUI 工具（Go + [Bubble Tea](https://github.com/charmbracelet/bubbletea)）。
 主色调为红色，启动后是欢迎页，可以进入 TODO（待办）或 REPORT（日报/碎片/生成周报）两个功能区。

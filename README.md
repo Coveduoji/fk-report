@@ -78,6 +78,34 @@ TODO 完整页面读写的是同一份数据，互相实时同步。
 不是活的同步机制——更新原 skill 后需要手动重新复制一份，`fk-report` 运行时也不会读取
 这份备份，实际生效的仍然是 `~/.claude/skills/weekly-report/`。
 
+**注意一个刻意的差异**：备份里的 `weekly-open-daily.sh` 和原版不一样——原版（
+`~/.claude/skills/weekly-report/weekly-open-daily.sh`）会在弹通知的同时用编辑器打开
+当天日报文件，**备份这份改成了只弹桌面通知、不打开文件**，避免打断正在做的事。原版
+本身没有改动，两边从这次起就是两份不同内容的脚本，不是单纯的镜像。
+
+### 桌面通知方案
+
+现在（Linux）用的是 `notify-send`（`libnotify` 提供的命令行工具），通过 D-Bus 把通知
+发给桌面环境自带的通知服务——这台机器是 GNOME + Wayland，实际接收和展示通知的是
+GNOME Shell 自己的 `org.freedesktop.Notifications` 实现，不需要额外装
+dunst/mako 这类独立通知守护进程。
+
+Windows 上没有 `notify-send`，可用替代方案（公司标机场景下 PowerShell 被策略禁用，
+所以排除了 `New-BurntToastNotification` 这类 PowerShell 方案）：
+
+- **VBScript 的 `Shell.Popup`**（推荐，和 PowerShell 完全独立，`cscript.exe` 就能跑）：
+
+  ```vbscript
+  Set objShell = CreateObject("WScript.Shell")
+  objShell.Popup "记录一下今天的工作内容", 5, "周报提醒", 64
+  ' 第二个参数是自动消失的秒数（5秒），不会阻塞后续脚本
+  ```
+
+  用 `cscript //nologo reminder.vbs` 调用，配合 Windows 计划任务（`schtasks`，同样在
+  `cmd` 里执行，不涉及 PowerShell）定时触发。
+- **`msg` 命令**（Windows 自带，最简单但样式是老式弹窗，需要目标用户会话开着）：
+  `msg %username% "记录一下今天的工作内容"`。
+
 ## 项目结构
 
 ```
